@@ -1,0 +1,8 @@
+*.yaml
+*.yml
+Dockerfile
+.dockerignore
+.gitignore
+README.md
+database/
+tests/
