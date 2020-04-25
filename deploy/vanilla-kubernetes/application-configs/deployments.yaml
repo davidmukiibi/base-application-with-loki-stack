@@ -1,0 +1,43 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: safeboda-go-deployment
+  labels:
+    run: safeboda-go-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: safeboda-go-deployment
+  template:
+    metadata:
+      labels:
+        run: safeboda-go-deployment
+    spec:
+      containers:
+        - name: safeboda-go-deployment
+          image: mukiibi/test-go:latest
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: safeboda-service
+  labels:
+    run: safeboda-service
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port:   '3000'
+spec:
+  ports:
+      - name: http
+        protocol: TCP
+        port: 3000
+        targetPort: 3000
+        # nodePort: 30002
+  selector:
+    run : safeboda-go-deployment
+  type: NodePort
