@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    prometheus.io/scrape: 'true'
+    prometheus.io/port:   '3000'
+  name: ingress
+  namespace: default
+spec:
+  rules:
+    - host: prometheus.davidmukiibi.com
+      http:
+        paths:
+          - backend:
+              serviceName: prometheus-service
+              servicePort: 9090
+            path: /
+    - host: grafana.davidmukiibi.com
+      http:
+        paths:
+          - backend:
+              serviceName: grafana-service
+              servicePort: 3000
+            path: /
+    - host: api.davidmukiibi.com
+      http:
+        paths:
+          - backend:
+              serviceName: safeboda-service
+              servicePort: 3000
+            path: /
+          - backend:
+              serviceName: safeboda-service
+              servicePort: 3000
+            path: /metrics
+  tls:
+    - hosts:
+        - frontend.davidmukiibi.com
+        - api.davidmukiibi.com
+        - database.davidmukiibi.com
+        - prometheus.davidmukiibi.com
+        - grafana.davidmukiibi.com
+      secretName: balena-certs
