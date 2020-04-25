@@ -1,0 +1,90 @@
+# # my global config
+# global:
+#     scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+#     evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+#     # scrape_timeout is set to the global default (10s).
+
+#     external_labels:
+#         monitor: 'codelab-monitor'
+
+# scrape_configs:
+#   - job_name: 'prometheus'
+#     static_configs:
+#       - targets: ['docker.for.mac.localhost:9090']
+
+#   - job_name: 'docker'
+#     static_configs:
+#       - targets: ['docker.for.mac.host.internal:9323']
+
+#   - job_name: 'safe-boda-go-app'
+#     dns-sd_configs:
+#       - names:
+#         - safe-boda-go-app-service
+#         type: A
+#         port: 3000
+
+global:
+    scrape_interval:     15s
+
+    external_labels:
+      monitor: 'example-monitor'
+
+  scrape_configs:
+  - job_name: 'example-metric'
+    scrape_interval: 5s
+
+    metrics_path: /metrics/
+    scheme: https
+    basic_auth:
+      username: admin
+      password: adminadmin
+    tls_config:
+      insecure_skip_verify: true
+
+
+    kubernetes_sd_configs:
+    - role: endpoints
+      namespaces:
+        names:
+        - default
+
+    relabel_configs:
+    - source_labels: [__meta_kubernetes_service_label_app]
+      separator: ;
+      regex: config-example
+      replacement: $1
+      action: keep
+    - source_labels: [__meta_kubernetes_endpoint_port_name]
+      separator: ;
+      regex: https
+      replacement: $1
+      action: keep
+    - source_labels: [__meta_kubernetes_namespace]
+      separator: ;
+      regex: (.*)
+      target_label: namespace
+      replacement: $1
+      action: replace
+    - source_labels: [__meta_kubernetes_pod_name]
+      separator: ;
+      regex: (.*)
+      target_label: pod
+      replacement: $1
+      action: replace
+    - source_labels: [__meta_kubernetes_service_name]
+      separator: ;
+      regex: (.*)
+      target_label: service
+      replacement: $1
+      action: replace
+    - source_labels: [__meta_kubernetes_service_name]
+      separator: ;
+      regex: (.*)
+      target_label: job
+      replacement: ${1}
+      action: replace
+    - separator: ;
+      regex: (.*)
+      target_label: endpoint
+      replacement: https
+      action: replace
