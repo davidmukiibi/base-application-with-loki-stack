@@ -1,0 +1,8 @@
+Jenkinsfile
+*.yaml
+*.yml
+Dockerfile
+.dockerignore
+.gitignore
+README.md
+.travis.yml
